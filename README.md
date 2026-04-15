@@ -89,7 +89,7 @@ lib/
 ## Screenshots 
 
 > Add screenshots here (Home screen, Voting screen, QR scan, etc.)
-![Login Screen](assets/records/Login.jpg)
+> <img src="assets/records/Login.jpg" width="300"/>
 ---
 
 ## Installation
