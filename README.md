@@ -88,22 +88,42 @@ lib/
 
 ## Screenshots 
 
+### Authentication & Home
 <p align="center">
   <img src="assets/records/Login.jpg" width="220"/>
   <img src="assets/records/Manager_home.jpg" width="220"/>
   <img src="assets/records/voter_home.jpg" width="220"/>
 </p>
 
+---
+
+### Voting & Room Details
 <p align="center">
-  <img src="assets/records/Create_room.jpg" width="220"/>
-  <img src="assets/records/QR_code.jpg" width="220"/>
-  <img src="assets/records/voter_scan_qr.jpg" width="220"/>
+  <img src="assets/records/voter_voting.jpg" width="200"/>
+  <img src="assets/records/voter_voted.jpg" width="200"/>
+  <img src="assets/records/Room_info.jpg" width="200"/>
 </p>
 
 <p align="center">
-  <img src="assets/records/voter_voting.jpg" width="220"/>
-  <img src="assets/records/voter_voted.jpg" width="220"/>
-  <img src="assets/records/Room_info.jpg" width="220"/>
+  <img src="assets/records/Room_info_detail.jpg" width="200"/>
+  <img src="assets/records/QR_code.jpg" width="200"/>
+  <img src="assets/records/CreateOption.jpg" width="200"/>
+</p>
+
+---
+
+### Create / Join Room (QR)
+<p align="center">
+  <img src="assets/records/Create_room.jpg" width="220"/>
+  <img src="assets/records/voter_scan_qr.jpg" width="220"/>
+</p>
+
+---
+
+### Announcements & Profile
+<p align="center">
+  <img src="assets/records/Notify.jpg" width="220"/>
+  <img src="assets/records/Profile.jpg" width="220"/>
 </p>
 
 ---
