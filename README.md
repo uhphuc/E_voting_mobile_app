@@ -88,8 +88,24 @@ lib/
 
 ## Screenshots 
 
-> Add screenshots here (Home screen, Voting screen, QR scan, etc.)
-> <img src="assets/records/Login.jpg" width="300"/>
+<p align="center">
+  <img src="assets/records/Login.jpg" width="220"/>
+  <img src="assets/records/Manager_home.jpg" width="220"/>
+  <img src="assets/records/voter_home.jpg" width="220"/>
+</p>
+
+<p align="center">
+  <img src="assets/records/Create_room.jpg" width="220"/>
+  <img src="assets/records/QR_code.jpg" width="220"/>
+  <img src="assets/records/voter_scan_qr.jpg" width="220"/>
+</p>
+
+<p align="center">
+  <img src="assets/records/voter_voting.jpg" width="220"/>
+  <img src="assets/records/voter_voted.jpg" width="220"/>
+  <img src="assets/records/Room_info.jpg" width="220"/>
+</p>
+
 ---
 
 ## Installation
