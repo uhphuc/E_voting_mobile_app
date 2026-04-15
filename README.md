@@ -89,7 +89,7 @@ lib/
 ## Screenshots 
 
 > Add screenshots here (Home screen, Voting screen, QR scan, etc.)
-![Login Screen](https://drive.google.com/file/d/1IGQVqAyyLEJssoUQYWiV0RZll_aF7blz/view)
+![Login Screen](assets/records/Login.jpg)
 ---
 
 ## Installation
