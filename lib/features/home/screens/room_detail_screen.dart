@@ -9,6 +9,7 @@ import 'package:project/models/room_model.dart';
 import 'package:project/services/crypto_service.dart';
 import 'package:provider/provider.dart';
 
+import '../../../services/paillier_service.dart';
 import '../../auth/controllers/auth_provider.dart';
 import '../widgets/option_card.dart';
 
@@ -27,6 +28,9 @@ class RoomDetailScreen extends StatefulWidget {
 class _RoomDetailScreenState extends State<RoomDetailScreen> {
 
   bool isLoading = true;
+  bool hasVoted = false;
+  List<int> selectedOptions = [];
+  bool isSubmitting = false;
 
   List<OptionModel> options = [];
   KeyModel? publicKey;
@@ -35,14 +39,28 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
   void initState() {
     super.initState();
     initRoom();
+    checkVote();
+  }
+  Future<void> checkVote() async {
+    final token = await TokenStorage.getToken();
+
+    final result = await RoomDetailService.hasVoted(
+      roomId: widget.room.id,
+      token: token!,
+    );
+
+    setState(() {
+      hasVoted = result;
+    });
   }
 
   Future<void> initRoom() async {
     try {
-
       final fetchedOptions = await RoomDetailService.getOptionByRoomId(
         roomId: widget.room.id,
       );
+      fetchedOptions.sort((a, b) => a.id.compareTo(b.id));
+
 
       final key = await CryptoService.getPublicKey();
 
@@ -62,7 +80,6 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
   }
   Future<void> handleUpdateResults() async {
     try {
-      // gọi API backend để trigger update
       await RoomDetailService.getVoteResults(
         roomId: widget.room.id,
       );
@@ -73,6 +90,41 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
     } catch (e) {
       print("Update error: $e");
     }
+  }
+
+  Future<void> handleSubmitVote() async {
+    setState(() {
+      isSubmitting = true;
+    });
+
+    try {
+      final vector = options.map((opt) {
+        return selectedOptions.contains(opt.id) ? 1 : 0;
+      }).toList();
+
+
+      final encryptedVector = vector.map((v) {
+        return PaillierService.encryptVote(publicKey!, v == 1);
+      }).toList();
+
+      final token = await TokenStorage.getToken();
+      await RoomDetailService.sendVotes(
+        roomId: widget.room.id,
+        encryptedVotes: encryptedVector,
+        token: token!
+      );
+
+      setState(() {
+        selectedOptions.clear();
+      });
+
+    } catch (e) {
+      print("Submit vote error: $e");
+    }
+
+    setState(() {
+      isSubmitting = false;
+    });
   }
 
   @override
@@ -127,13 +179,32 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
 
           return OptionCard(
             option: option,
-            roomId: widget.room.id,
-            publicKey: publicKey!,
+            isSelected: selectedOptions.contains(option.id),
+            hasVoted: hasVoted,
+            onToggle: () {
+              setState(() {
+                if (selectedOptions.contains(option.id)) {
+                  selectedOptions.remove(option.id);
+                } else {
+                  selectedOptions.add(option.id);
+                }
+              });
+            },
           );
         },
       ),
 
-      floatingActionButton: user?.role == "manager"
+      floatingActionButton: (user?.role == "voter" && !hasVoted)
+          ? FloatingActionButton.extended(
+        onPressed: selectedOptions.isEmpty || isSubmitting
+            ? null
+            : handleSubmitVote,
+        label: isSubmitting
+            ? const CircularProgressIndicator()
+            : const Text("Submit Vote"),
+        icon: const Icon(Icons.how_to_vote),
+      )
+          : (user?.role == "manager"
           ? FloatingActionButton(
         onPressed: () {
           showModalBottomSheet(
@@ -146,7 +217,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
         },
         child: const Icon(Icons.add),
       )
-          : null,
+          : null),
     );
   }
 }

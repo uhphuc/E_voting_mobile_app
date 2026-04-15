@@ -1,127 +1,59 @@
 import 'package:flutter/material.dart';
-import 'package:project/models/key_model.dart';
-import 'package:project/features/home/services/room_detail_service.dart';
-import 'package:project/services/paillier_service.dart';
 import 'package:provider/provider.dart';
 import '../../../models/option_model.dart';
 import '../../auth/controllers/auth_provider.dart';
 
-class OptionCard extends StatefulWidget {
+class OptionCard extends StatelessWidget {
   final OptionModel option;
-  final int? roomId;
-  final KeyModel publicKey;
+  final bool isSelected;
+  final bool hasVoted;
+  final VoidCallback onToggle;
 
   const OptionCard({
     super.key,
     required this.option,
-    required this.roomId,
-    required this.publicKey,
+    required this.isSelected,
+    required this.hasVoted,
+    required this.onToggle,
   });
 
   @override
-  State<OptionCard> createState() => _OptionCardState();
-}
-
-class _OptionCardState extends State<OptionCard> {
-
-  bool isVoting = false;
-  bool isVoted = false;
-
-  Future<void> handleVote() async {
-
-    setState(() {
-      isVoting = true;
-    });
-
-    try {
-
-      final cipher = PaillierService.encryptVote(widget.publicKey, true);
-
-      await RoomDetailService.sendVote(
-        roomId: widget.roomId,
-        optionId: widget.option.id,
-        encryptedVote: cipher,
-      );
-
-      setState(() {
-        isVoted = true;
-      });
-
-    } catch (e) {
-      print("Vote error: $e");
-    }
-
-    setState(() {
-      isVoting = false;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-
     final user = Provider.of<AuthProvider>(context, listen: false).user;
-
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      elevation: 2,
-
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      child: ListTile(
+        title: Text(option.name),
+        subtitle: Text(option.description),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-
-            Text(
-              widget.option.name,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.blue.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
               ),
-            ),
-
-            const SizedBox(height: 6),
-
-            Text(
-              widget.option.description,
-              style: const TextStyle(
-                color: Colors.grey,
-              ),
-            ),
-
-            const SizedBox(height: 10),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-
-                Text(
-                  "Votes: ${widget.option.sum}",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w500,
-                  ),
+              child: Text(
+                "${option.sum}",
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
                 ),
+              ),
+            ),
+            const SizedBox(width: 8),
 
-                if (user?.role == "voter")
-                  ElevatedButton(
-                    onPressed: (isVoted || isVoting)
-                        ? null
-                        : handleVote,
-                    child: isVoting
-                        ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                      ),
-                    )
-                        : Text(isVoted ? "Voted" : "Vote"),
-                  )
-              ],
-            )
+            if (!hasVoted && user?.role == "voter" )
+              Checkbox(
+                value: isSelected,
+                onChanged: (_) => onToggle(),
+              )
+            else if (hasVoted && user?.role == "voter" )
+              Icon(Icons.check_circle, color: Colors.green,)
           ],
         ),
-      ),
+      )
     );
   }
 }

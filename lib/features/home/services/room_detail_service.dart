@@ -38,19 +38,20 @@ class RoomDetailService {
     }
     return [];
   }
-  static Future<bool> sendVote({
+  static Future<bool> sendVotes({
     required int? roomId,
-    required int? optionId,
-    required String encryptedVote
+    required List<String> encryptedVotes,
+    required String token
   }) async {
     final response = await ApiClient.post(
       "/votes/",
       {
         "roomId" : roomId,
-        "optionId" : optionId,
-        "encryptedVote" : encryptedVote
+        "votes": encryptedVotes,
       },
+      token: token
     );
+    print("response code: ${response.statusCode}");
 
     if (response.statusCode == 201 || response.statusCode == 200) {
       return true;
@@ -89,5 +90,21 @@ class RoomDetailService {
 
   static void disposeListener() {
     SocketService.socket.off("vote_results_updated");
+  }
+  static Future<bool> hasVoted({
+    required int roomId,
+    required String token,
+  }) async {
+    final response = await ApiClient.get(
+      "/votes/has-voted/$roomId",
+      token: token,
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['hasVoted'] == true;
+    } else {
+      throw Exception("Failed to check vote status");
+    }
   }
 }

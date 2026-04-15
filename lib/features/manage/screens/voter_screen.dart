@@ -7,6 +7,7 @@ import 'package:project/features/manage/screens/pending_state_screen.dart';
 import 'package:provider/provider.dart';
 import '../../auth/controllers/auth_provider.dart';
 import '../services/room_service.dart';
+import 'package:image_picker/image_picker.dart';
 
 
 class VoterScreen extends StatefulWidget {
@@ -24,6 +25,27 @@ class _VoterScreenState extends State<VoterScreen> {
   bool isScanning = false;
 
   bool isProcessing = false;
+
+  Future<void> _scanFromImage() async {
+    final picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image == null) return;
+
+    final controller = MobileScannerController();
+
+    final BarcodeCapture? result =
+    await controller.analyzeImage(image.path);
+
+    if (result == null || result.barcodes.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("No QR found in image")),
+      );
+      return;
+    }
+
+    _handleBarcode(result);
+  }
 
   void _handleBarcode(BarcodeCapture barcodes) async {
     if (isProcessing) return;
@@ -224,6 +246,13 @@ class _VoterScreenState extends State<VoterScreen> {
                   ),
                 ),
               ),
+            ),
+
+            const SizedBox(height: 12),
+            ElevatedButton.icon(
+              onPressed: _scanFromImage,
+              icon: const Icon(Icons.image),
+              label: const Text("Scan from Image"),
             ),
 
             const SizedBox(height: 40),

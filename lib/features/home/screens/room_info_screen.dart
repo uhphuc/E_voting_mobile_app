@@ -51,23 +51,26 @@ class _RoomInfoScreenState extends State<RoomInfoScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Scan to Join Room"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            QrImageView(
-              data: inviteJson,
-              version: QrVersions.auto,
-              size: 200.0,
-            ),
-            const SizedBox(height: 10),
-            ElevatedButton.icon(
-              onPressed: () {
-                Share.share(inviteJson);
-              },
-              icon: const Icon(Icons.share),
-              label: const Text("Share"),
-            ),
-          ],
+        content: SizedBox(
+          width: double.maxFinite,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              QrImageView(
+                data: inviteJson,
+                version: QrVersions.auto,
+                size: 200.0,
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton.icon(
+                onPressed: () {
+                  Share.share(inviteJson);
+                },
+                icon: const Icon(Icons.share),
+                label: const Text("Share"),
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -132,7 +135,7 @@ class _RoomInfoScreenState extends State<RoomInfoScreen> {
                 showQrDialog();
               },
               icon: const Icon(Icons.qr_code),
-              label: const Text("Generate QR Code"),
+              label: const Text("Open QR Code"),
             ),
 
             const SizedBox(height: 30),
